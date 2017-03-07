@@ -6,6 +6,7 @@
 namespace hollodotme\AsyncPhp;
 
 use hollodotme\FastCGI\Client;
+use hollodotme\FastCGI\Requests\PostRequest;
 use hollodotme\FastCGI\SocketConnections\UnixDomainSocket;
 
 require(__DIR__ . '/../vendor/autoload.php');
@@ -29,23 +30,10 @@ if ( $connected )
 
 			$connection = new UnixDomainSocket( 'unix:///var/run/php/php7.1-fpm-commands.sock' );
 			$fpmClient  = new Client( $connection );
-			$processId  = $fpmClient->sendAsyncRequest(
-				[
-					'GATEWAY_INTERFACE' => 'FastCGI/1.0',
-					'REQUEST_METHOD'    => 'POST',
-					'SCRIPT_FILENAME'   => '/vagrant/src/worker.php',
-					'SERVER_SOFTWARE'   => 'php/fcgiclient',
-					'REMOTE_ADDR'       => '127.0.0.1',
-					'REMOTE_PORT'       => '9985',
-					'SERVER_ADDR'       => '127.0.0.1',
-					'SERVER_PORT'       => '80',
-					'SERVER_NAME'       => 'myServer',
-					'SERVER_PROTOCOL'   => 'HTTP/1.1',
-					'CONTENT_TYPE'      => 'application/x-www-form-urlencoded',
-					'CONTENT_LENGTH'    => mb_strlen( $body ),
-				],
-				$body
-			);
+
+			$request = new PostRequest( '/vagrant/src/worker.php', $body );
+
+			$processId = $fpmClient->sendAsyncRequest( $request );
 
 			echo "Spawned process with ID: {$processId}\n";
 		}

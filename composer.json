@@ -13,7 +13,7 @@
 	"require": {
 		"php": ">=7.1",
 		"ext-redis": "*",
-		"hollodotme/fast-cgi-client": "^2.0"
+		"hollodotme/fast-cgi-client": "^2.1"
 	},
 	"autoload": {
 		"psr-4": {
